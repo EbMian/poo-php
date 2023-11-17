@@ -3,6 +3,10 @@ declare(strict_types=1);
 class Player {
     private $level;
 
+    public function __construct() {
+        $this->level = 0;
+    }
+
     public function getLevel() {
         return $this->level;
     }
