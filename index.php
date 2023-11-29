@@ -28,12 +28,12 @@ class Lobby
         });
     }
 
-    public function addPlayer(Player $player)
+    public function addPlayer(SimplePlayer $player)
     {
         $this->queuingPlayers[] = new QueuingPlayer($player);
     }
 
-    public function addPlayers(Player ...$players)
+    public function addPlayers(SimplePlayer ...$players)
     {
         foreach ($players as $player) {
             $this->addPlayer($player);
@@ -41,11 +41,42 @@ class Lobby
     }
 }
 
-class Player
+abstract class Player
 {
 
+    //protected $player;
     protected $name;
     protected $ratio;
+
+    abstract public function __construct($name, $ratio = 400.0);
+    /*{
+        $this->name = $name;
+        $this->ratio = $ratio;
+    }*/
+
+    abstract public function getName();
+    /*{
+        return $this->name;
+    }*/
+
+    abstract public function probabilityAgainst($player);
+    /*{
+        return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
+    }*/
+
+    abstract public function updateRatioAgainst($player, int $result);
+    /*{
+        $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
+    }*/
+
+    abstract public function getRatio();
+    /*{
+        return $this->ratio;
+    }*/
+}
+
+class SimplePlayer extends Player
+{
 
     public function __construct($name, $ratio = 400.0)
     {
@@ -53,17 +84,17 @@ class Player
         $this->ratio = $ratio;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    private function probabilityAgainst(self $player)
+    public function probabilityAgainst($player)
     {
         return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
     }
 
-    public function updateRatioAgainst(self $player, int $result): void
+    public function updateRatioAgainst($player, int $result)
     {
         $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
     }
@@ -74,11 +105,12 @@ class Player
     }
 }
 
-class QueuingPlayer extends Player
+
+final class QueuingPlayer extends SimplePlayer
 {
     protected $range;
 
-    public function __construct(Player $player, $range = 1){
+    public function __construct(SimplePlayer $player, $range = 1){
         $this->name = $player->getName();
         $this->ratio = $player->getRatio();
         $this->range = $range;
@@ -91,8 +123,8 @@ class QueuingPlayer extends Player
 }
 
 
-$greg = new Player('greg', 400);
-$jade = new Player('jade', 476);
+$greg = new SimplePlayer('greg', 400);
+$jade = new SimplePlayer('jade', 476);
 
 $lobby = new Lobby();
 $lobby->addPlayers($greg, $jade);
