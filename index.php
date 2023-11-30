@@ -59,12 +59,12 @@ abstract class Player
         return $this->name;
     }*/
 
-    abstract public function probabilityAgainst($player);
+    abstract public function probabilityAgainst(self $player);
     /*{
         return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
     }*/
 
-    abstract public function updateRatioAgainst($player, int $result);
+    abstract public function updateRatioAgainst(self $player, int $result);
     /*{
         $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
     }*/
@@ -89,12 +89,12 @@ class SimplePlayer extends Player
         return $this->name;
     }
 
-    public function probabilityAgainst($player)
+    public function probabilityAgainst(Player $player)
     {
         return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
     }
 
-    public function updateRatioAgainst($player, int $result)
+    public function updateRatioAgainst(Player $player, int $result)
     {
         $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
     }
@@ -122,12 +122,28 @@ final class QueuingPlayer extends SimplePlayer
 
 }
 
+class BlitzPlayer extends SimplePlayer 
+{
+    //protected $range;
+    public function __construct($name, $ratio = 1200.0){
+        $this->name = $name;
+        $this->ratio = $ratio;
+        $this->ratio = $ratio;
+        //$this->range = $range;
+    }
+    public function updateRatioAgainst(Player $player, int $result)
+    {
+        $this->ratio += 4 * 32 * ($result - $this->probabilityAgainst($player));
+    }
+
+}
 
 $greg = new SimplePlayer('greg', 400);
 $jade = new SimplePlayer('jade', 476);
-
+$bily = new BlitzPlayer('bily');
+var_dump($bily);
 $lobby = new Lobby();
-$lobby->addPlayers($greg, $jade);
+$lobby->addPlayers($greg, $jade, $bily);
 
 var_dump($lobby->findOponents($lobby->queuingPlayers[0]));
 
