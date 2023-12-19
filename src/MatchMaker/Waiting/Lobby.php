@@ -4,7 +4,16 @@ declare(strict_types=1);
 namespace App\MatchMaker\Waiting {
     use App\MatchMaker\Players\QueuingPlayer;
     use App\MatchMaker\Players\Player;
-    class Lobby
+    
+    interface LobbyInterface
+    {
+        public function findOponents(QueuingPlayer $player);
+        public function addPlayer(Player $player);
+        public function addPlayers(Player ...$players);
+    
+    }
+    
+    class Lobby implements LobbyInterface
     {
         /** @var array<QueuingPlayer> */
         public $queuingPlayers = [];

@@ -3,7 +3,15 @@
 declare(strict_types=1);
 namespace App\MatchMaker\Players {
     use App\MatchMaker\Players\AbstractPlayer;
-    class Player extends AbstractPlayer
+    interface PlayerInterface
+    {
+        public function getName();
+        public function updateRatioAgainst(AbstractPlayer $player, $result);
+        public function getRatio();
+    
+    }
+
+    class Player extends AbstractPlayer implements PlayerInterface
     {
         public function getName()
         {
